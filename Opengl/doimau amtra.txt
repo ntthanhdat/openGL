@@ -1,4 +1,4 @@
-﻿
+
 #include<Windows.h>
 #include<stdio.h>
 #include<GL/glut.h>
@@ -13,10 +13,10 @@ int spin = 0;
 
 void draw() {
 	glEnable(GL_LIGHTING);
-
-
+	
+	
 	glEnable(GL_DEPTH_TEST);
-
+	
 	glClearColor(1, 1, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -24,8 +24,8 @@ void draw() {
 
 	//vẽ trục tọa độ
 	gluLookAt(0.0, 10.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	//DrawCoordinate();
-
+	DrawCoordinate();
+	
 	//glLoadIdentity();
 	GLfloat light_pos0[] = { 1.0, 0.0, 0.0, 0.0 };  //Vị trí thứ 0 ánh sáng chiếu vào
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos0);
@@ -40,27 +40,27 @@ void draw() {
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
 
 	GLfloat light_pos1[] = { 1.0, 0.0, 0.0, 0.0 };  //Vị trí thứ 1 ánh sáng chiếu vào
-	glLightfv(GL_LIGHT1, GL_POSITION, light_pos1);
-	GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+glLightfv(GL_LIGHT1, GL_POSITION, light_pos1);
+GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+glLightfv(GL_LIGHT1, GL_POSITION, light_position);
 
-	//hai cái ấm to
+//hai cái ấm to
 	glPushMatrix();  //push
 	glEnable(GL_LIGHT0);
 	glTranslatef(-4, 0, 0);
 	glRotatef(spin, 0, 1, 0);
 	glutSolidTeapot(2.0);
 	glLoadIdentity();
-	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHT0);  
 	glPopMatrix();   //pop
-
+	
 	glPushMatrix();  //push
 	glEnable(GL_LIGHT1);
 	glTranslatef(4, 0, 0);
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(600, 600);
 	glutCreateWindow("Thuc-hanh-1");
 
-
+	
 	glutDisplayFunc(draw);
 	glutReshapeFunc(ReShape);
 	glutMainLoop();

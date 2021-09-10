@@ -1,0 +1,149 @@
+
+#include<Windows.h>
+#include<stdio.h>
+#include<GL/glut.h>
+#include<GL/gl.h>
+#include<GL/glu.h>
+#include <iostream>
+using namespace std;
+int spin = 0;
+
+void Init()
+{
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
+
+	GLfloat light_pos[] = { 0.0, 1.0, 1.0, 0.0 };  //Vị trí ánh sáng chiếu vào
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+	GLfloat ambient[] = { 1.0, 1.0, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient); //Chiếu ánh sáng toàn phần của đối tượng
+
+	GLfloat diff_use[] = { 0.0, 0.5, 1.7, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diff_use); //Tạo ánh sáng khuếch tán cho đối tượng
+
+	GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular); //Tạo ánh sáng phản xạ trong đối tượng
+
+	GLfloat shininess = 30.0f;
+	glMateriali(GL_FRONT, GL_SHININESS, shininess); //Điều chỉnh cường độ điểm chiếu sáng phản xạ
+}
+
+void DrawCoordinate()
+{
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES); //OX
+		glColor3f(1.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(10.0, 0.0, 0.0);
+	glEnd();
+
+	glBegin(GL_LINES); //OY
+		glColor3f(0.0, 1.0, 0.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 10.0, 0.0);
+	glEnd();
+
+	glBegin(GL_LINES); //OZ
+		glColor3f(0.0, 0.0, 1.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 10.0);
+	glEnd();
+
+	glEnable(GL_LIGHTING);
+}
+
+void chop(void) {
+	glBegin(GL_LINE_LOOP);
+
+		glColor3f(0, 1.0, 1.0);
+
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 1, 0); 
+		glVertex3f(0, 0, 1);
+	
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 1, 0);
+		glVertex3f(1, 0, 0);
+
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, 1);
+		glVertex3f(1, 0, 0);
+
+	glEnd();
+}
+
+
+void draw() {
+	glClearColor(1, 1, 1, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glLoadIdentity();
+	
+	//vẽ trục tọa độ
+	gluLookAt(0.0, 10.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	DrawCoordinate();
+	glPushMatrix();
+	//glLoadIdentity();
+	glTranslatef(-4, 0, 0);
+	glRotatef(spin, 0, 1, 0);
+	
+	glutSolidTeapot(2.0);
+
+	//glDisable(GL_LIGHTING);
+	glLoadIdentity();
+	glPopMatrix();
+	glTranslatef(4, 0, 0);
+	glRotatef(spin, 0, 1, 0);
+	
+	glutSolidTeapot(2.0);
+	//glEnable(GL_LIGHTING);
+	
+
+	spin += 1;
+	if (spin > 360)
+	{
+		spin = spin - 360;
+	}
+
+	glutSwapBuffers();
+	glutPostRedisplay();
+
+	
+		
+	glFlush();
+}
+ void timer(int t)
+ {
+	 glutPostRedisplay();
+	 glutTimerFunc(2, timer, 0);
+ }
+
+void ReShape ( int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	float ratio = (float)w / (float)h;
+	gluPerspective(45.0, ratio, 1, 100.0);
+	//glOrtho(-10.0, 10.0, -10.0, 10.0, 10.0, -10.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0.0, 0.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB);
+	glutInitWindowSize(600, 600);
+	glutCreateWindow("Thuc-hanh-1");
+
+	Init();
+	glutDisplayFunc(draw);
+	glutReshapeFunc(ReShape);
+	//glutTimerFunc(timer);
+	glutMainLoop();
+}

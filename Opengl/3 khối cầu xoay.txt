@@ -1,0 +1,189 @@
+//NGUYỄN THẾ THÀNH ĐẠT 60TH4 - 1851061537
+#include<Windows.h>
+#include<stdio.h>
+#include<GL/glut.h>
+#include<GL/gl.h>
+#include<GL/glu.h>
+#include <iostream>
+using namespace std;
+int spin = 0;
+
+
+#define checkImageWidth 64
+#define checkImageHeight 64
+static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
+
+static GLuint texName;
+
+void makeCheckImage(void)
+{
+	int i, j, c;
+
+	for (i = 0; i < checkImageHeight; i++) {
+		for (j = 0; j < checkImageWidth; j++) {
+			c = ((((i & 0x8) == 0) ^ ((j & 0x8)) == 0)) * 255;
+			checkImage[i][j][0] = (GLubyte)c;
+			checkImage[i][j][1] = (GLubyte)c;
+			checkImage[i][j][2] = (GLubyte)c;
+			checkImage[i][j][3] = (GLubyte)255;
+		}
+	}
+}
+void init(void)
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glShadeModel(GL_FLAT);
+	glEnable(GL_DEPTH_TEST);
+
+	makeCheckImage();
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
+		checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		checkImage);
+}
+void DrawCoordinate() //hàm vẽ trục tọa độ
+{
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
+	glBegin(GL_LINES); //OX
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(10.0, 0.0, 0.0);
+	glEnd();
+
+	glBegin(GL_LINES); //OY
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 10.0, 0.0);
+	glEnd();
+
+	glBegin(GL_LINES); //OZ
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 10.0);
+	glEnd();
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
+}
+
+
+void draw() {
+	glClearColor(1, 1, 1, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHT0);
+
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glBindTexture(GL_TEXTURE_2D, texName);
+
+	glLoadIdentity();
+
+	//vẽ trục tọa độ
+	gluLookAt(0.0, 10.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	DrawCoordinate();
+
+	//nguồn sáng
+	GLfloat light_pos0[] = { 1.0, 0.0, 0.0, 0.0 };  
+	GLfloat light_ambient0[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat light_diffuse0[] = { 0.0, 1.0, 1.0, 1.0 };
+	GLfloat light_specular0[] = { 0.0, 1.0, 1.0, 1.0 };
+	GLfloat light_position0[] = { 0.0, 1.0, 1.0, 0.0 };
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+
+	GLfloat light_diffuse1[] = { 0.0, 0.0, 1.0, 1.0 };
+	GLfloat light_diffuse2[] = { 0.0, 1.0, 0.0, 1.0 };
+
+	glDisable(GL_TEXTURE_2D);
+	//hình lập phương gốc
+	glPushMatrix();
+	
+	
+
+	//glRotatef(180, 0, 1, 0); 
+	glRotatef(spin, 0, 0, 1);  //xoay quanh trục oz
+	glutSolidCube(2.0);
+	glLoadIdentity();
+	glPopMatrix();
+	
+	
+
+	//hình 1
+	glPushMatrix();
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse1);
+	glTranslatef(0, -4, 0);
+	
+	glRotatef(spin, 0, 1, 0); //xoay quanh trục oy
+	glutSolidCube(2.0);
+	glLoadIdentity();
+	glPopMatrix();
+
+
+	
+	//hình 2
+	glPushMatrix();
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse2);
+	glTranslatef(0, 4, 0);
+	glRotatef(-spin, 0, 1, 0); //xoay quanh trục oz
+	glutSolidCube(2.0);
+	glLoadIdentity();
+	glPopMatrix();
+
+
+	spin += 1;
+	if (spin > 360)
+	{
+		spin = spin - 360;
+	}
+
+	glutSwapBuffers();
+	glutPostRedisplay();
+
+
+
+	glFlush();
+}
+
+
+void ReShape(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	float ratio = (float)w / (float)h;
+	gluPerspective(45.0, ratio, 1, 100.0);
+	//glOrtho(-10.0, 10.0, -10.0, 10.0, 10.0, -10.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0.0, 0.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB);
+	glutInitWindowSize(600, 600);
+	glutCreateWindow("Thuc-hanh-1");
+
+	init();
+	glutDisplayFunc(draw);
+	glutReshapeFunc(ReShape);
+	glutMainLoop();
+}
